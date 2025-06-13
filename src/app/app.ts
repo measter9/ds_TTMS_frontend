@@ -19,6 +19,8 @@ export class App {
 
   contactName = '';
   contactNumber = '';
+  editContactName = '';
+  editContactNumber = '';
   isEditing = false;
   editingContactId = '';
 
@@ -44,6 +46,15 @@ this.http.delete(`https://localhost:7097/api/Contacts/${id}`).subscribe({
   }
   protected addContact(){
     const newContact = { name: this.contactName, number: this.contactNumber };
+    if(newContact.number.length !== 9){
+      alert("niepoprawny numer")
+      return;
+    }
+    if(newContact.name.length > 15){
+      alert("za długa nazwa kontaktu")
+      return;
+    }
+
     this.http.post('https://localhost:7097/api/Contacts', newContact).subscribe({
       next: (res) => {
         console.log('Dodano kontakt', res);
@@ -70,16 +81,26 @@ this.http.delete(`https://localhost:7097/api/Contacts/${id}`).subscribe({
 
     const updatedContact = {
       id: this.editingContactId,
-      name: this.contactName,
-      number: this.contactNumber,
+      name: this.editContactName,
+      number: this.editContactNumber,
     };
+
+    if(updatedContact.number.length !== 9){
+      alert("niepoprawny numer")
+      return;
+    }
+    if(updatedContact.name.length > 15){
+      alert("za długa nazwa kontaktu")
+      return;
+    }
 
     this.http.put(`https://localhost:7097/api/Contacts/${this.editingContactId}`, updatedContact).subscribe({
       next: () => {
         this.contacts$ = this.getContacts();
-        this.contactName = ''; 
-        this.contactNumber = '';      },
-        
+        this.editContactName = ''; 
+        this.editContactNumber = '';
+      this.isEditing = false      },
+
       error: (err) => console.error('Błąd przy edycji kontaktu:', err),
     });
   }
